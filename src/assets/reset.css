@@ -1,0 +1,10 @@
+
+body {
+    margin: 0;
+}
+
+/* 去掉 hr 的 border、margin */
+hr {
+    border: 0;
+    margin: 0;
+}
