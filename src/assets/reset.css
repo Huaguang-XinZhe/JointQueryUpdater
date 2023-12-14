@@ -8,3 +8,8 @@ hr {
     border: 0;
     margin: 0;
 }
+
+/* 去掉表格中表头单元格和数据单元格的 padding */
+th, td {
+    padding: 0;
+}
