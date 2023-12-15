@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <TableComponent />
+    <!--    <TableComponent />-->
     <!--    <TableComponent2 />-->
+    <TableComponent3 />
     <br />
     <el-button>提交所有更改</el-button>
     <hr />
@@ -12,11 +13,17 @@
 <script>
 import TableComponent from "@/components/TableComponent.vue";
 import InputComponent from "@/components/InputComponent.vue";
-// import TableComponent2 from "@/components/TableComponent2.vue";
+import TableComponent2 from "@/components/TableComponent2.vue";
+import TableComponent3 from "@/components/TableComponent3.vue";
 
 export default {
   name: "App",
-  components: { InputComponent, TableComponent },
+  components: {
+    InputComponent,
+    TableComponent,
+    TableComponent2,
+    TableComponent3,
+  },
 };
 </script>
 

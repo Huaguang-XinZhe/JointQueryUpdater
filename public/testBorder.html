@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <style>
+      table {
+        border-collapse: collapse; /* 使单元格的边框连在一起 */
+      }
+      th,
+      td {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="myTable">
+      <tr>
+        <td tabindex="0">单元格 1</td>
+        <td tabindex="0">单元格 2</td>
+        <!-- 更多单元格 -->
+      </tr>
+      <!-- 更多行 -->
+    </table>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const table = document.getElementById("myTable");
+        const cells = table.getElementsByTagName("td");
+
+        for (let i = 0; i < cells.length; i++) {
+          // // 添加聚焦事件监听器
+          // cells[i].addEventListener("focus", function () {
+          //   this.style.borderColor = "rgb(64, 158, 255)"; // 改变边框颜色
+          // });
+          //
+          // // 添加失焦事件监听器
+          // cells[i].addEventListener("blur", function () {
+          //   this.style.borderColor = ""; // 恢复默认边框颜色
+          // });
+
+          // 添加聚焦事件监听器
+          cells[i].addEventListener("focus", function () {
+            this.style.outline = "2px solid rgb(64, 158, 255)"; // 添加一个轮廓线来模拟边框颜色
+          });
+
+          // 添加失焦事件监听器
+          cells[i].addEventListener("blur", function () {
+            this.style.outline = ""; // 移除轮廓线
+          });
+
+          // // 添加聚焦事件监听器
+          // cells[i].addEventListener("focus", function () {
+          //   this.style.boxShadow = "0 0 0 2px rgb(64, 158, 255)"; // 创建一个边框外部的蓝色发光效果
+          // });
+          //
+          // // 添加失焦事件监听器
+          // cells[i].addEventListener("blur", function () {
+          //   this.style.boxShadow = ""; // 移除发光效果
+          // });
+        }
+      });
+    </script>
+  </body>
+</html>

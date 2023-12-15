@@ -69,7 +69,8 @@ export default {
 
 <template>
   <table>
-    <tr v-for="row in tableData" :key="row.id">
+    <tr v-for="row in tableData" :key="row.id.value">
+      <!-- id 已经被封装了，是个对象，所以，使用它作为键会报错！！！ -->
       <td v-for="cell in row" tabindex="0" @click="clickCell(cell)">
         <span v-if="!cell.editing">{{ cell.value }}</span>
         <input v-else type="text" :value="cell.value" ref="cellInput" />

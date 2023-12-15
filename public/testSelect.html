@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <style>
+      span[contenteditable="true"] {
+        caret-color: red; /* 这会将光标的颜色设置为红色 */
+      }
+      /* 修改用户选中文本的样式 */
+      span[contenteditable="true"]::selection {
+        background: skyblue; /* 选中文本的背景颜色 */
+        color: darkgray; /* 选中文本的字体颜色 */
+      }
+      span:focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <span contenteditable="true">这是一段可编辑文本</span>
+
+    <script>
+      document.addEventListener("click", () => {
+        console.log("点击事件触发");
+        const spans = document.getElementsByTagName("span");
+        selectTextAndMoveCursorToEnd(spans[0]);
+      });
+
+      function selectTextAndMoveCursorToEnd(spanElement) {
+        const selection = window.getSelection();
+
+        // 创建范围并全选文本
+        const range = document.createRange();
+        range.selectNodeContents(spanElement);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // 创建一个新的范围，用于将光标移动到文本末尾
+        // const newRange = document.createRange();
+        // newRange.selectNodeContents(spanElement);
+        // newRange.collapse(false); // 折叠范围到末尾
+
+        // selection.removeAllRanges(); // 清除之前的选择
+        // selection.addRange(newRange); // 添加新的折叠范围，移动光标
+      }
+    </script>
+  </body>
+</html>
