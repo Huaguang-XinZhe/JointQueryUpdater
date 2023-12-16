@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+  </head>
+  <body>
+    <div id="example">
+      Hello, <b>World</b>!<br />
+      This is a <span style="display: none">hidden</span> text.
+      <p>Paragraph 1</p>
+      <p style="display: none">Paragraph 2 (hidden)</p>
+    </div>
+    <script>
+      let element = document.getElementById("example");
+
+      console.log(element.textContent);
+      // 输出:
+      // Hello, World!
+      // This is a hidden text.
+      // Paragraph 1
+      // Paragraph 2 (hidden)
+
+      console.log(element.innerText);
+      // 输出:
+      // Hello, World!
+      // This is a  text.
+      // Paragraph 1
+    </script>
+  </body>
+</html>

@@ -2,7 +2,8 @@
   <div id="app">
     <!--    <TableComponent />-->
     <!--    <TableComponent2 />-->
-    <TableComponent3 />
+    <!--    <TableComponent3 />-->
+    <TestShiftEnter />
     <br />
     <el-button>提交所有更改</el-button>
     <hr />
@@ -11,10 +12,11 @@
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
+import TableComponent from "@/test/TableComponent.vue";
 import InputComponent from "@/components/InputComponent.vue";
-import TableComponent2 from "@/components/TableComponent2.vue";
+import TableComponent2 from "@/test/TableComponent2.vue";
 import TableComponent3 from "@/components/TableComponent3.vue";
+import TestShiftEnter from "@/test/TestChanges.vue";
 
 export default {
   name: "App",
@@ -23,6 +25,7 @@ export default {
     TableComponent,
     TableComponent2,
     TableComponent3,
+    TestShiftEnter,
   },
 };
 </script>
