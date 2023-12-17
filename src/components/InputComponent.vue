@@ -1,3 +1,28 @@
+<template>
+  <el-form>
+    <el-form-item>
+      <!--
+        如果不绑 v-model，输入不会被记录；
+        keydown 事件一定要加 native 修饰符，否则不会触发；
+       -->
+      <el-input
+        type="textarea"
+        v-model="textInput"
+        :autosize="{ minRows: 3, maxRows: 10 }"
+        placeholder="在这里输入联查 SQL，按下 Ctrl + Enter 或按钮确认"
+        :autofocus="true"
+        resize="none"
+        @keydown.native.ctrl.enter="executeSql"
+      ></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" v-show="confirmButtonShow" @click="executeSql"
+        >确认
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
 <script>
 import axios from "axios";
 
@@ -10,13 +35,19 @@ export default {
     };
   },
   methods: {
-    sqlQuery() {
-      console.log("sqlQuery 执行了");
-      this.textInput = ""; // 清空文本
+    executeSql() {
+      console.log("executeSql 执行了");
       axios
-        .post("http://localhost:8081/sqlQuery", this.textInput) // 不刷新页面发起请求
-        .then((response) => {})
+        .post("http://localhost:8080/api/sql/execute", this.textInput, {
+          headers: {
+            "Content-Type": "text/plain", // 以纯文本发送
+          },
+        }) // 不刷新页面发起请求
+        .then((response) => {
+          this.$emit("successfulResponse", response.data.data);
+        })
         .catch((error) => {});
+      this.textInput = ""; // 清空文本
     },
   },
   watch: {
@@ -32,31 +63,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <el-form>
-    <el-form-item>
-      <!--
-        如果不绑 v-model，输入不会被记录；
-        keydown 事件一定要加 native 修饰符，否则不会触发；
-       -->
-      <el-input
-        type="textarea"
-        v-model="textInput"
-        :autosize="{ minRows: 3, maxRows: 10 }"
-        placeholder="在这里输入联查 SQL，按下 Ctrl + Enter 或按钮确认"
-        :autofocus="true"
-        resize="none"
-        @keydown.native.ctrl.enter="sqlQuery"
-      ></el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" v-show="confirmButtonShow" @click="sqlQuery"
-        >确认
-      </el-button>
-    </el-form-item>
-  </el-form>
-</template>
 
 <style scoped>
 /* 可以直接影响 Element UI 的样式，不需要深度选择器 */

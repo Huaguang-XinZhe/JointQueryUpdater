@@ -3,11 +3,12 @@
     <!--    <TableComponent />-->
     <!--    <TableComponent2 />-->
     <!--    <TableComponent3 />-->
-    <TestShiftEnter />
+    <!--    <TestShiftEnter />-->
+    <TableComponent4 :tableData="tableData" />
     <br />
     <el-button>提交所有更改</el-button>
     <hr />
-    <InputComponent />
+    <InputComponent @successfulResponse="handleSuccess" />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import TableComponent from "@/test/TableComponent.vue";
 import InputComponent from "@/components/InputComponent.vue";
 import TableComponent2 from "@/test/TableComponent2.vue";
 import TableComponent3 from "@/components/TableComponent3.vue";
+import TableComponent4 from "@/test/TableComponent4.vue";
 import TestShiftEnter from "@/test/TestChanges.vue";
 
 export default {
@@ -25,7 +27,21 @@ export default {
     TableComponent,
     TableComponent2,
     TableComponent3,
+    TableComponent4,
     TestShiftEnter,
+  },
+  data() {
+    return {
+      tableData: [],
+    };
+  },
+  methods: {
+    // 成功响应
+    handleSuccess(data) {
+      // 直接冻结整个数据对象（变成非响应式的）
+      this.tableData = Object.freeze(data);
+      console.log(this.tableData);
+    },
   },
 };
 </script>
