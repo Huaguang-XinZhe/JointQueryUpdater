@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { selectAll, visualizeSpaces } from "@/utils";
+import { selectAll, visualize } from "@/utils";
 
 export default {
   name: "TestShiftEnter",
@@ -74,7 +74,7 @@ export default {
       // 原因：第一次回车的时候会在当前文本的后边加上两个 br，之后的输入就放入这两个 br 之间，然后再回车的话，就只加一个 br，这样就会导致最后总是多出一个 br。
       // 不是第一次回车就会导致这个问题，而是在文末第一次回车才会，如果在文中间回车，就不会。
       // console.log("currentContent:", currentContent);
-      console.log("currentContent：", visualizeSpaces(currentContent));
+      console.log("currentContent：", visualize(currentContent));
       if (currentContent === "初始内容") {
         console.log("内容未变更！");
         event.target.removeAttribute("contentChanged");

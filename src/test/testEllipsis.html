@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <style>
+      div {
+        width: 200px;
+        margin: 0 auto;
+        border: 1px solid black;
+        padding: 10px;
+      }
+      .ellipsis {
+        max-width: 100px; /* 最大宽度 */
+        white-space: nowrap; /* 不换行 */
+        overflow: hidden; /* 隐藏超出部分 */
+        text-overflow: ellipsis; /* 超出部分显示省略号 */
+      }
+      .multi-line-ellipsis {
+        //max-height: 90px;
+        //line-height: 31px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <!--    <div class="ellipsis" contenteditable="true">
+      这里是可能会很长很长很长很长很长的内容
+    </div>-->
+    <div class="multi-line-ellipsis" contenteditable="true">
+      这里是内容，如果内容足够长，它将在三行后显示省略号executeSql是内容，如果内容足够长，它将在三行后显示省略号executeSql是内容，如果内容足够长，它将在三行后显示省略号executeSql是内容，如果内容足够长，它将在三行后显示省略号executeSql是内容，如果内容足够长，它将在三行后显示省略号executeSql是内容，如果内容足够长，它将在三行后显示省略号
+    </div>
+
+    <script>
+      // document.querySelectorAll(".ellipsis").forEach(function (div) {
+      //   div.addEventListener("focus", function () {
+      //     // 在编辑时可能需要移除某些样式，以便用户可以看到全部内容
+      //     this.style.whiteSpace = "normal";
+      //     this.style.overflow = "visible";
+      //   });
+      //
+      //   div.addEventListener("blur", function () {
+      //     // 当编辑完成后，重新应用样式以显示省略号
+      //     this.style.whiteSpace = "nowrap";
+      //     this.style.overflow = "hidden";
+      //   });
+      // });
+      document.querySelectorAll(".multi-line-ellipsis").forEach(function (div) {
+        div.addEventListener("click", function () {
+          // 定位到文本最后（必须放在 click 中，放在 focus 中没用！！！）
+          const range = document.createRange();
+          const sel = window.getSelection();
+          console.log(this); // this 是 div，聚焦事件的绑定者
+          range.selectNodeContents(this);
+          range.collapse(false); // false 代表移动到最后
+          sel.removeAllRanges();
+          sel.addRange(range);
+        });
+      });
+    </script>
+  </body>
+</html>

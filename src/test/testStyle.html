@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
+    <style>
+      table {
+        border-collapse: collapse;
+        margin: 0 auto;
+      }
+      td {
+        border: 1px solid black;
+        padding: 10px;
+      }
+      .null-value {
+        font-style: italic;
+        color: grey;
+      }
+      .empty-value {
+        /* 为空时的样式，例如背景色改变等 */
+        background-color: bisque;
+      }
+      .limited-height {
+        display: inline-block;
+        max-width: 100px;
+        max-height: 50px; /* 设置单元格的最大高度为50像素 */
+        /*overflow: hidden;*/ /* 这样设置的话，将不可滑动，离焦之前是什么状态就呈现什么状态 */
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!--  根据内容确定样式-->
+    <table>
+      <tbody>
+        <tr>
+          <td contenteditable="true">null</td>
+          <td contenteditable="true" class="limited-height">Example</td>
+          <td contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td contenteditable="true">null</td>
+          <td contenteditable="true" class="limited-height">Example</td>
+          <td contenteditable="true"></td>
+        </tr>
+        <tr>
+          <td contenteditable="true">null</td>
+          <td contenteditable="true" class="limited-height">Example</td>
+          <td contenteditable="true"></td>
+        </tr>
+      </tbody>
+      <!-- 更多行和列 -->
+    </table>
+
+    <script>
+      let called = false;
+
+      function once(fn) {
+        return function () {
+          if (!called) {
+            called = true;
+            fn.apply(this, arguments);
+          }
+        };
+      }
+
+      // 滚动到底部的函数
+      function scrollToBottom(cell) {
+        console.log("滚动到底部");
+        cell.scrollTop = cell.scrollHeight;
+      }
+
+      // 定位到文本最后的函数
+      function setCursorAtEnd(cell) {
+        console.log("定位到文本最后");
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(cell);
+        range.collapse(false); // false 代表移动到最后
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+
+      // // 包装函数，确保它们只执行一次
+      // const onceScrollToBottom = once(scrollToBottom);
+      // const onceSetCursorAtEnd = once(setCursorAtEnd);
+      const onceExecute = once((cell) => {
+        console.log("执行");
+        scrollToBottom(cell);
+        setCursorAtEnd(cell);
+      });
+
+      // // 用 _.once 包装函数，确保它们只执行一次
+      // const onceScrollToBottom = _.once(scrollToBottom);
+      // const onceSetCursorAtEnd = _.once(setCursorAtEnd);
+
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const cells = document.querySelectorAll(
+          'table td[contenteditable="true"]'
+        );
+
+        cells.forEach((cell) => {
+          styleCell(cell);
+
+          cell.addEventListener("input", () => {
+            styleCell(cell);
+          });
+
+          cell.addEventListener("blur", () => {
+            called = false;
+            // 滚动到顶部，不要用 this 调用！
+            cell.scrollTop = 0;
+            // 失去焦点时隐藏滚动条
+            cell.style.overflow = "hidden";
+            // 折叠超出的文本
+            cell.style.textOverflow = "ellipsis";
+            cell.style.whiteSpace = "break-spaces";
+          });
+
+          // 离开页面后返回，会触发 focus 事件
+          cell.addEventListener("focus", () => {
+            console.log("聚焦"); // 先聚焦后点击（如果已经是聚焦状态，则不会再次聚焦！！！）
+            // 获得焦点时显示滚动条
+            cell.style.overflow = "auto";
+            cell.style.textOverflow = "initial";
+            cell.whiteSpace = "normal";
+          });
+
+          // 添加事件监听器
+          // cell.addEventListener("click", function (e) {
+          //   console.log("点击");
+          //   onceScrollToBottom(this);
+          //   onceSetCursorAtEnd(this);
+          // });
+
+          // 添加事件监听器
+          cell.addEventListener("click", function () {
+            console.log("点击");
+            onceExecute(cell);
+            // once(() => { // 直接调用 once 得到的是一个函数，不会执行！！！
+            //   scrollToBottom(cell);
+            //   setCursorAtEnd(cell);
+            // });
+            // once(function () {
+            //   scrollToBottom(cell);
+            //   setCursorAtEnd(cell);
+            // });
+          });
+
+          // cell.addEventListener("click", function (e) {
+          //   console.log("点击");
+          //   // 阻止默认事件
+          //   e.preventDefault();
+          //   // 滚动到底部（有效）
+          //   cell.scrollTop = cell.scrollHeight;
+          //   // 定位到文本最后（必须放在 click 中，放在 focus 中没用！！！）
+          //   const range = document.createRange();
+          //   const sel = window.getSelection();
+          //   console.log(this); // this 是 div，聚焦事件的绑定者
+          //   range.selectNodeContents(this);
+          //   range.collapse(false); // false 代表移动到最后
+          //   sel.removeAllRanges();
+          //   sel.addRange(range);
+          // });
+        });
+      });
+
+      function styleCell(cell) {
+        const value = cell.textContent.trim();
+
+        if (value === "null") {
+          cell.classList.add("null-value");
+          cell.classList.remove("empty-value");
+        } else if (value === "") {
+          cell.classList.add("empty-value");
+          cell.classList.remove("null-value");
+        } else {
+          cell.classList.remove("null-value", "empty-value");
+        }
+      }
+    </script>
+  </body>
+</html>

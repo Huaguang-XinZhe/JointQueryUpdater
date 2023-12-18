@@ -3,8 +3,9 @@
     <!--    <TableComponent />-->
     <!--    <TableComponent2 />-->
     <!--    <TableComponent3 />-->
-    <!--    <TestShiftEnter />-->
+    <!--        <TestShiftEnter />-->
     <TableComponent4 :tableData="tableData" />
+    <!--    <TestStyle />-->
     <br />
     <el-button>提交所有更改</el-button>
     <hr />
@@ -19,6 +20,7 @@ import TableComponent2 from "@/test/TableComponent2.vue";
 import TableComponent3 from "@/components/TableComponent3.vue";
 import TableComponent4 from "@/test/TableComponent4.vue";
 import TestShiftEnter from "@/test/TestChanges.vue";
+import TestStyle from "@/test/TestStyle.vue";
 
 export default {
   name: "App",
@@ -29,6 +31,7 @@ export default {
     TableComponent3,
     TableComponent4,
     TestShiftEnter,
+    TestStyle,
   },
   data() {
     return {
@@ -40,7 +43,6 @@ export default {
     handleSuccess(data) {
       // 直接冻结整个数据对象（变成非响应式的）
       this.tableData = Object.freeze(data);
-      console.log(this.tableData);
     },
   },
 };
