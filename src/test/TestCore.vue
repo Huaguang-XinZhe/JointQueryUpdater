@@ -38,16 +38,21 @@ export default {
     return {
       tableData: Object.freeze([
         {
-          id: 1,
-          name: "王小龙",
-          date: "2016-05-03",
-          address: "上海市普陀区金沙江路 1518 弄",
+          myinput_id: "1",
+          mytag_id: "1",
+          c1: "待办",
+          c2: "整理、架构",
+          c3: "",
+          content: "pinbox 收藏整理、思考、架构（输出）。",
         },
         {
-          id: 2,
-          name: "王小虎",
-          date: "2016-05-02",
-          address: "上海市普陀区金沙江路 1517 弄",
+          myinput_id: "3",
+          mytag_id: "3",
+          c1: "待办",
+          c2: "深入思考 “内外统一”",
+          c3: "",
+          content:
+            "我的对外形象问题。内在追求和外在表现有没有必要统一？什么时候统一？",
         },
       ]),
       // 当前表头（不要在这里使用上面的属性，可能还没有定义，可以转为计算属性）
