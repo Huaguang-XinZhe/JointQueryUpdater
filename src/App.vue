@@ -4,8 +4,9 @@
     <!--    <TableComponent2 />-->
     <!--    <TableComponent3 />-->
     <!--        <TestShiftEnter />-->
-    <TableComponent4 :tableData="tableData" />
+    <!--    <TableComponent4 :tableData="tableData" />-->
     <!--    <TestStyle />-->
+    <TestCore />
     <br />
     <el-button>提交所有更改</el-button>
     <hr />
@@ -21,6 +22,7 @@ import TableComponent3 from "@/components/TableComponent3.vue";
 import TableComponent4 from "@/test/TableComponent4.vue";
 import TestShiftEnter from "@/test/TestChanges.vue";
 import TestStyle from "@/test/TestStyle.vue";
+import TestCore from "@/test/TestCore.vue";
 
 export default {
   name: "App",
@@ -32,6 +34,7 @@ export default {
     TableComponent4,
     TestShiftEnter,
     TestStyle,
+    TestCore,
   },
   data() {
     return {
