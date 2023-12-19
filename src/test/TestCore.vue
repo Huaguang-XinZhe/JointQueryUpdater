@@ -173,6 +173,12 @@ export default {
       // console.log("changedObj:", this.changedObj);
       console.log("changedMap:", this.changedMap);
     },
+    sendMapDataToParent() {
+      // 将 Map 转为数组
+      let changedList = Array.from(this.changedMap.values());
+      // 发送给父组件
+      this.$emit("coreToApp", changedList);
+    },
   },
 };
 </script>
