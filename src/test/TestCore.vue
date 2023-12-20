@@ -17,7 +17,7 @@
             @click="handleClick($event, rowIndex, columnName)"
             @blur="handleBlur($event, rowIndex, columnName)"
           >
-            {{ cellValue }}
+            {{ cellValue === null ? "&lt;null&gt;" : cellValue }}
           </td>
         </tr>
       </tbody>
@@ -36,28 +36,34 @@ export default {
   name: "TestCore",
   data() {
     return {
-      tableData: Object.freeze([
-        {
-          myinput_id: "1",
-          mytag_id: "1",
-          c1: "待办",
-          c2: "整理、架构",
-          c3: "",
-          content: "pinbox 收藏整理、思考、架构（输出）。",
-        },
-        {
-          myinput_id: "3",
-          mytag_id: "3",
-          c1: "待办",
-          c2: "深入思考 “内外统一”",
-          c3: "",
-          content:
-            "我的对外形象问题。内在追求和外在表现有没有必要统一？什么时候统一？",
-        },
-      ]),
+      // tableData: Object.freeze([
+      //   {
+      //     myinput_id: "1",
+      //     mytag_id: "1",
+      //     c1: "待办",
+      //     c2: "整理、架构",
+      //     c3: "",
+      //     content: "pinbox 收藏整理、思考、架构（输出）。",
+      //   },
+      //   {
+      //     myinput_id: "3",
+      //     mytag_id: "3",
+      //     c1: "待办",
+      //     c2: "深入思考 “内外统一”",
+      //     c3: "",
+      //     content:
+      //       "我的对外形象问题。内在追求和外在表现有没有必要统一？什么时候统一？",
+      //   },
+      // ]),
       // 当前表头（不要在这里使用上面的属性，可能还没有定义，可以转为计算属性）
       // currentTableHeader: Object.freeze(Object.keys(this.tableData[0])),
     };
+  },
+  props: {
+    tableData: {
+      type: Array,
+      required: true,
+    },
   },
   computed: {
     // 计算属性来获取当前表头
@@ -126,11 +132,9 @@ export default {
         // 这个设置必须放在前边，否则 originalValue 设置完后会被覆盖
         this.changedObj = {
           originalValue: event.target.textContent.trim(), // 去除两边的空格
-          updateInfo: {
-            tableName: tableName,
-            fieldName: columnName,
-            rowId: rowId,
-          },
+          tableName: tableName,
+          fieldName: columnName,
+          rowId: rowId,
         };
       } else {
         // 如果找到了，就把它的值设值给 changedObj

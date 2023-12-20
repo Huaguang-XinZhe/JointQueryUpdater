@@ -6,11 +6,15 @@
     <!--        <TestShiftEnter />-->
     <!--    <TableComponent4 :tableData="tableData" />-->
     <!--    <TestStyle />-->
-    <TestCore ref="testCoreComponent" @coreToApp="commitAllChanges" />
+    <TestCore
+      ref="testCoreComponent"
+      @coreToApp="commitAllChanges"
+      :tableData="tableData"
+    />
     <br />
     <el-button @click="triggerCoreMethod">提交所有更改</el-button>
     <hr />
-    <InputComponent @successfulResponse="handleSuccess" />
+    <InputComponent ref="inputComponent" @successfulResponse="handleSuccess" />
   </div>
 </template>
 
@@ -42,6 +46,18 @@ export default {
       tableData: [],
     };
   },
+  mounted() {
+    console.log("App mounted");
+    // 从 localStorage 读取数据
+    const sql = localStorage.getItem("sql");
+
+    if (sql) {
+      // 有数据就发请求
+      let inputComponent = this.$refs.inputComponent;
+      inputComponent.textInput = sql;
+      inputComponent.executeSql();
+    }
+  },
   methods: {
     // 成功响应
     handleSuccess(data) {
@@ -62,7 +78,7 @@ export default {
           console.log(response.data.data);
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error.message);
         });
     },
     triggerCoreMethod() {

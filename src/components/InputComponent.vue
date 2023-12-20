@@ -45,9 +45,14 @@ export default {
         }) // 不刷新页面发起请求
         .then((response) => {
           this.$emit("successfulResponse", response.data.data);
+          // 在浏览器本地存储请求成功的 sql 语句
+          localStorage.setItem("sql", this.textInput);
+          this.textInput = ""; // 清空文本
         })
-        .catch((error) => {});
-      this.textInput = ""; // 清空文本
+        .catch((error) => {
+          // todo: 为什么请求出错控制台没有输出呢？
+          console.log(error);
+        });
     },
   },
   watch: {
