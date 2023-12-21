@@ -26,6 +26,7 @@
 
 <script>
 import axios from "axios";
+import { getTablesInSql } from "@/utils";
 
 export default {
   name: "InputComponent",
@@ -38,6 +39,7 @@ export default {
   methods: {
     executeSql() {
       console.log("executeSql 执行了");
+      this.$bus.$emit("table_name_set", getTablesInSql(this.textInput));
       axios
         .post("http://localhost:8080/api/sql/execute", this.textInput, {
           headers: {

@@ -29,3 +29,23 @@ export function setCursorAtEnd(element) {
   sel.removeAllRanges();
   sel.addRange(range);
 }
+
+// 从 sql 语句中获取表名
+export function getTablesInSql(sql) {
+  // 正则表达式匹配 FROM 和 JOIN 后面的表名（i 是大小写不敏感的）
+  // (?:FROM|JOIN) 匹配 FROM 或 JOIN，但不捕获匹配项，即非捕获组
+  let tableRegex = /(?:FROM|JOIN)\s+([^\s,;]+)/gi;
+
+  // 用于存储找到的表名
+  let tables = new Set();
+
+  // 一直匹配直到找不到更多
+  let match;
+  while ((match = tableRegex.exec(sql)) !== null) {
+    // console.log(match[0]); // 匹配到的整个表达式
+    // 将找到的表名添加到集合中
+    tables.add(match[1]);
+  }
+
+  return tables;
+}

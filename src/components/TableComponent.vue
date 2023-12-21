@@ -48,6 +48,23 @@ export default {
       required: true,
     },
   },
+  // 此时组件的数据已经被观察，但 DOM 尚未被挂载
+  created() {
+    // 非响应式数据放在这里初始化
+    // 初始化变更对象
+    this.changedObj = {};
+    this.changedMap = new Map();
+    this.debouncedStyleCell = debounce(this.styleCell, 300);
+    this.$bus.$on("table_name_set", (tableNameSet) => {
+      // console.log("table_name_set 事件监听到了！", tableNameSet);
+      this.tableNameSet = tableNameSet;
+    });
+    // todo 这里能得到 tables 的键，即表名
+  },
+  destroyed() {
+    // 组件销毁时，取消监听
+    this.$bus.$off("table_count");
+  },
   computed: {
     // 计算属性来获取当前表头
     currentTableHeader() {
@@ -60,8 +77,8 @@ export default {
         });
         // console.log("tableIds = ", tableIds);
         return Object.keys(this.tableData[0]).filter((key) => {
-          // 过滤掉辅助 id
-          return !tableIds.includes(key);
+          // 过滤掉 id 和辅助 id
+          return !tableIds.includes(key) && !key.includes("id");
         });
       }
       return [];
@@ -78,14 +95,6 @@ export default {
         });
       });
     },
-  },
-  // 此时组件的数据已经被观察，但 DOM 尚未被挂载
-  created() {
-    // 非响应式数据放在这里初始化
-    // 初始化变更对象
-    this.changedObj = {};
-    this.changedMap = new Map();
-    this.debouncedStyleCell = debounce(this.styleCell, 300);
   },
   methods: {
     handleInput(event) {
@@ -109,22 +118,6 @@ export default {
         console.log("没找到，设置 originalValue 属性！");
         // 遍历 tables 对象,拿到 tableName
         let tableName = "";
-        // for (let _tableName in tables) { // 不能用 for in 遍历，因为会遍历到原型链上的属性
-        //   // 如果当前列名在当前表的字段列表中
-        //   if (tables[_tableName].includes(columnName)) {
-        //     // 将表名和字段名设值
-        //     tableName = _tableName;
-        //     break;
-        //   }
-        // }
-        // entries 会返回对象的键值对数组
-        // Object.entries(tables).forEach(([key, value]) => {
-        //   // forEach 对每一项都会遍历，不能 break
-        //   if (value.includes(columnName)) {
-        //     tableName = key; // 设值表名
-        //     // break;
-        //   }
-        // });
         for (let [key, value] of Object.entries(tables)) {
           // for of 会循环遍历这个数组，得到里边的键值对数组
           if (value.includes(columnName)) {
@@ -136,7 +129,13 @@ export default {
         // 通过 tableData 拿到 rowId
         let rowObj = this.tableData[rowIndex];
         // todo 这里要根据所查表的张数进行判断，如果只查一张表，那么就直接用 rowObj.id
-        let rowId = rowObj[`${tableName}_id`];
+        let rowId = 0;
+        if (this.tableNameSet.size === 1) {
+          rowId = rowObj.id;
+        } else {
+          // 查了多张表
+          rowId = rowObj[`${tableName}_id`];
+        }
 
         // 设值（简化写法）
         // 这个设置必须放在前边，否则 originalValue 设置完后会被覆盖
