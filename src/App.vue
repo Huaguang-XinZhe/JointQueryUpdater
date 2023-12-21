@@ -53,7 +53,7 @@ export default {
 
     if (sql) {
       // 有数据就发请求
-      let inputComponent = this.$refs.inputComponent;
+      let inputComponent = this.$refs.inputComponent; // 组件的引用只有一个，所以可以这样获取
       inputComponent.textInput = sql;
       inputComponent.executeSql();
     }
@@ -66,7 +66,14 @@ export default {
     },
     // 提交所有更改
     commitAllChanges(changedList) {
-      console.log("提交所有更改", changedList);
+      // console.log("提交所有更改", changedList);
+      let loadingObj = this.$loading({
+        // lock: true,
+        target: this.$refs.testCoreComponent.$el,
+        text: "正在提交更改...",
+        // spinner: "el-icon-loading",
+        // background: "rgba(0, 0, 0, 0.7)",
+      });
       // 把数据异步发给后端
       axios
         .post("http://localhost:8080/api/changes/update", changedList, {
@@ -74,10 +81,13 @@ export default {
             "Content-Type": "application/json", // 以 JSON 发送
           },
         })
-        .then((response) => {
-          console.log(response.data.data);
+        .then(() => {
+          loadingObj.close();
+          this.$message.success("全部修改成功！");
         })
         .catch((error) => {
+          loadingObj.close();
+          this.$message.error("修改失败！");
           console.log(error.message);
         });
     },
