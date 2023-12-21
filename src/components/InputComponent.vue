@@ -13,6 +13,7 @@
         :autofocus="true"
         resize="none"
         @keydown.native.ctrl.enter="executeSql"
+        ref="el-input"
       ></el-input>
     </el-form-item>
     <el-form-item>
@@ -44,14 +45,16 @@ export default {
           },
         }) // 不刷新页面发起请求
         .then((response) => {
+          this.$message.success("sql 执行成功！");
+          this.$emit("update:topHalfShow", true); // 显示上半部分
           this.$emit("successfulResponse", response.data.data);
           // 在浏览器本地存储请求成功的 sql 语句
           localStorage.setItem("sql", this.textInput);
           this.textInput = ""; // 清空文本
         })
         .catch((error) => {
-          // todo: 为什么请求出错控制台没有输出呢？
-          console.log(error);
+          this.$message.error("出错了！去控制台看看原因吧。");
+          console.log(error.message);
         });
     },
   },

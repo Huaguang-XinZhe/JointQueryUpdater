@@ -78,7 +78,6 @@ export default {
     // 非响应式数据放在这里初始化
     // 初始化变更对象
     this.changedObj = {};
-    // 初始化变更 Map
     this.changedMap = new Map();
   },
   methods: {
@@ -126,6 +125,7 @@ export default {
 
         // 通过 tableData 拿到 rowId
         let rowObj = this.tableData[rowIndex];
+        // todo 这里要根据所查表的张数进行判断，如果只查一张表，那么就直接用 rowObj.id
         let rowId = rowObj[`${tableName}_id`];
 
         // 设值（简化写法）
@@ -163,7 +163,7 @@ export default {
         let compoundKey = `${rowIndex}-${columnName}`; // 定义复合键（用对象作 key）
         // 注意：如果复合键（数组）是一样的，它不会覆盖，而是会添加到 Map 中
         // 但如果是字符串就没问题，会覆盖
-        this.changedMap.set(compoundKey, this.changedObj);
+        this.updateMap(compoundKey, this.changedObj);
       }
 
       // 清空变更对象
@@ -182,6 +182,12 @@ export default {
       let changedList = Array.from(this.changedMap.values());
       // 发送给父组件
       this.$emit("coreToApp", changedList);
+    },
+    updateMap(key, value) {
+      // 更新 Map
+      this.changedMap.set(key, value);
+      // 触发父组件中 mySize 的更新
+      this.$emit("update:map-size", this.changedMap.size);
     },
   },
 };

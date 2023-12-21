@@ -6,15 +6,24 @@
     <!--        <TestShiftEnter />-->
     <!--    <TableComponent4 :tableData="tableData" />-->
     <!--    <TestStyle />-->
-    <TestCore
-      ref="testCoreComponent"
-      @coreToApp="commitAllChanges"
-      :tableData="tableData"
+    <div v-show="topHalfShow">
+      <TestCore
+        ref="testCoreComponent"
+        @coreToApp="commitAllChanges"
+        :tableData="tableData"
+        :map-size.sync="mapSize"
+      />
+      <br />
+      <el-button v-show="commitButtonShow" @click="triggerCoreMethod"
+        >提交所有更改</el-button
+      >
+      <hr />
+    </div>
+    <InputComponent
+      ref="inputComponent"
+      @successfulResponse="handleSuccess"
+      :topHalfShow.sync="topHalfShow"
     />
-    <br />
-    <el-button @click="triggerCoreMethod">提交所有更改</el-button>
-    <hr />
-    <InputComponent ref="inputComponent" @successfulResponse="handleSuccess" />
   </div>
 </template>
 
@@ -22,7 +31,7 @@
 import TableComponent from "@/test/TableComponent.vue";
 import InputComponent from "@/components/InputComponent.vue";
 import TableComponent2 from "@/test/TableComponent2.vue";
-import TableComponent3 from "@/components/TableComponent3.vue";
+import TableComponent3 from "@/test/TableComponent3.vue";
 import TableComponent4 from "@/test/TableComponent4.vue";
 import TestShiftEnter from "@/test/TestChanges.vue";
 import TestStyle from "@/test/TestStyle.vue";
@@ -44,7 +53,16 @@ export default {
   data() {
     return {
       tableData: [],
+      commitButtonShow: false,
+      mapSize: 0,
+      topHalfShow: false,
     };
+  },
+  watch: {
+    mapSize() {
+      console.log("mapSize 变化了");
+      this.commitButtonShow = this.mapSize > 0;
+    },
   },
   mounted() {
     console.log("App mounted");
@@ -55,7 +73,7 @@ export default {
       // 有数据就发请求
       let inputComponent = this.$refs.inputComponent; // 组件的引用只有一个，所以可以这样获取
       inputComponent.textInput = sql;
-      inputComponent.executeSql();
+      inputComponent.executeSql(true);
     }
   },
   methods: {
@@ -110,6 +128,9 @@ export default {
   flex-direction: column; /* 让元素竖向排列，但会撑满全宽（如果子元素没有设置宽度的话） */
   justify-content: center;
   align-items: center; /* 在让元素竖直排列的情况下，这一项就变成了调整至水平居中 */
+}
+#app > div {
+  text-align: center;
 }
 hr {
   width: 1000px;
