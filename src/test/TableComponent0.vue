@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export default {
-  name: "TableComponent",
+  name: "TableComponent0",
   data() {
     return {
       modifications: [],

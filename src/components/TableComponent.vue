@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div class="table-container">
     <table>
       <thead>
         <tr>
+          <th>#</th>
           <th v-for="columnName in currentTableHeader" :key="columnName">
             {{ columnName }}
           </th>
@@ -10,12 +11,17 @@
       </thead>
       <tbody>
         <tr v-for="(rowObj, rowIndex) in tableData" :key="rowIndex">
+          <!-- 编号列 -->
+          <td class="number">{{ rowIndex + 1 }}</td>
           <!--      对对象遍历，拿到的是值，索引是属性名-->
           <td
             v-for="(cellValue, columnName) in rowObj"
             :key="columnName"
             @click="handleClick($event, rowIndex, columnName)"
             @blur="handleBlur($event, rowIndex, columnName)"
+            @input="handleInput"
+            ref="cell"
+            v-if="currentTableHeader.includes(columnName)"
           >
             {{ cellValue === null ? "&lt;null&gt;" : cellValue }}
           </td>
@@ -28,37 +34,14 @@
 
 <script>
 // 表名-字段列表
+import debounce from "lodash/debounce";
+
 let tables = {
   mytag: ["id", "input_id", "c1", "c2", "c3"],
   myinput: ["id", "content"],
 };
 export default {
-  name: "TestCore",
-  data() {
-    return {
-      // tableData: Object.freeze([
-      //   {
-      //     myinput_id: "1",
-      //     mytag_id: "1",
-      //     c1: "待办",
-      //     c2: "整理、架构",
-      //     c3: "",
-      //     content: "pinbox 收藏整理、思考、架构（输出）。",
-      //   },
-      //   {
-      //     myinput_id: "3",
-      //     mytag_id: "3",
-      //     c1: "待办",
-      //     c2: "深入思考 “内外统一”",
-      //     c3: "",
-      //     content:
-      //       "我的对外形象问题。内在追求和外在表现有没有必要统一？什么时候统一？",
-      //   },
-      // ]),
-      // 当前表头（不要在这里使用上面的属性，可能还没有定义，可以转为计算属性）
-      // currentTableHeader: Object.freeze(Object.keys(this.tableData[0])),
-    };
-  },
+  name: "TableComponent",
   props: {
     tableData: {
       type: Array,
@@ -68,9 +51,32 @@ export default {
   computed: {
     // 计算属性来获取当前表头
     currentTableHeader() {
-      return this.tableData.length > 0
-        ? Object.freeze(Object.keys(this.tableData[0]))
-        : [];
+      if (this.tableData.length > 0) {
+        const tableNames = Object.keys(tables);
+        // console.log("tableNames = ", tableNames);
+        // 辅助 id（表名_id）
+        const tableIds = tableNames.map((tableName) => {
+          return `${tableName}_id`; // 必须 return，否则是 undefined
+        });
+        // console.log("tableIds = ", tableIds);
+        return Object.keys(this.tableData[0]).filter((key) => {
+          // 过滤掉辅助 id
+          return !tableIds.includes(key);
+        });
+      }
+      return [];
+    },
+  },
+  watch: {
+    tableData() {
+      console.log("tableData 变更了！初始化样式！");
+      // 重新渲染表格后，需要重新设置样式（必须加这个，否则 cell 是 undefined）
+      this.$nextTick(() => {
+        let cells = this.$refs.cell;
+        cells.forEach((cell) => {
+          this.styleCell(cell); // 初始化样式
+        });
+      });
     },
   },
   // 此时组件的数据已经被观察，但 DOM 尚未被挂载
@@ -79,8 +85,12 @@ export default {
     // 初始化变更对象
     this.changedObj = {};
     this.changedMap = new Map();
+    this.debouncedStyleCell = debounce(this.styleCell, 300);
   },
   methods: {
+    handleInput(event) {
+      this.debouncedStyleCell(event.target);
+    },
     handleClick(event, rowIndex, columnName) {
       if (event.target.hasAttribute("contenteditable")) {
         console.log("已经在编辑了，不要再触发了！");
@@ -157,6 +167,7 @@ export default {
       } else if (currentContent !== this.changedObj.originalValue) {
         // 对比，有更改的话，就设值 changedObject
         console.log(this.changedObj.originalValue, "=>", currentContent);
+        event.target.setAttribute("contentChanged", "true");
         this.changedObj.changedValue = currentContent; // 这样设值不是响应式的
         // this.$set(this.changedObj, "changedValue", currentContent); // 这样设值是响应式的
         // 将变更对象添加到 Map 中
@@ -164,6 +175,9 @@ export default {
         // 注意：如果复合键（数组）是一样的，它不会覆盖，而是会添加到 Map 中
         // 但如果是字符串就没问题，会覆盖
         this.updateMap(compoundKey, this.changedObj);
+      } else {
+        console.log("和原始值相等，没有变化！");
+        event.target.removeAttribute("contentChanged");
       }
 
       // 清空变更对象
@@ -189,17 +203,68 @@ export default {
       // 触发父组件中 mySize 的更新
       this.$emit("update:map-size", this.changedMap.size);
     },
+    styleCell(cell) {
+      const value = cell.textContent.trim(); // textContent 包括文本两边的空格，还有换行符等等
+
+      if (value === "<null>") {
+        // 这里必须得用 <null>，用字符实体返回的是 false
+        cell.classList.add("null-value");
+        cell.classList.remove("empty-value");
+      } else if (value === "") {
+        cell.classList.add("empty-value");
+        cell.classList.remove("null-value");
+      } else {
+        cell.classList.remove("null-value", "empty-value");
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+/* overflow 在 table 上不起作用，必须放在它的父元素上 */
+.table-container {
+  max-width: 1200px;
+  max-height: 400px;
+  overflow: auto; /* 在这个容器上设置滚动条 */
+}
 table {
-  border-collapse: collapse;
+  width: 100%; /* 让表格填满容器宽度 */
+  border-collapse: collapse; /* 使单元格的边框连在一起 */
+}
+thead > tr {
+  background-color: rgb(30, 31, 34);
+  color: white;
 }
 th,
 td {
   border: 1px solid rgb(0, 0, 0, 0.1);
   padding: 10px;
+}
+th {
+  border-color: whitesmoke;
+}
+td {
+  max-width: 250px;
+  /*max-lines: 3;*/ /* td 里没有这个属性 */
+  /*max-height: 100px;*/ /* 为什么这个属性也没用呢？ */
+}
+/*不要加空格，加了空格就变成后代选择器了，不加就是 “与” 选择*/
+td.number {
+  color: rgb(68, 67, 67);
+  font-style: italic;
+}
+td[contentChanged="true"] {
+  background-color: skyblue;
+}
+td > i {
+  color: darkgray;
+}
+.null-value {
+  font-style: italic;
+  color: grey;
+}
+.empty-value {
+  background-color: bisque;
 }
 </style>

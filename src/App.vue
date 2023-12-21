@@ -7,7 +7,7 @@
     <!--    <TableComponent4 :tableData="tableData" />-->
     <!--    <TestStyle />-->
     <div v-show="topHalfShow">
-      <TestCore
+      <TableComponent
         ref="testCoreComponent"
         @coreToApp="commitAllChanges"
         :tableData="tableData"
@@ -28,14 +28,13 @@
 </template>
 
 <script>
-import TableComponent from "@/test/TableComponent.vue";
+import TableComponent from "@/components/TableComponent.vue";
 import InputComponent from "@/components/InputComponent.vue";
 import TableComponent2 from "@/test/TableComponent2.vue";
 import TableComponent3 from "@/test/TableComponent3.vue";
 import TableComponent4 from "@/test/TableComponent4.vue";
 import TestShiftEnter from "@/test/TestChanges.vue";
 import TestStyle from "@/test/TestStyle.vue";
-import TestCore from "@/test/TestCore.vue";
 import axios from "axios";
 
 export default {
@@ -48,7 +47,6 @@ export default {
     TableComponent4,
     TestShiftEnter,
     TestStyle,
-    TestCore,
   },
   data() {
     return {
@@ -102,6 +100,7 @@ export default {
         .then(() => {
           loadingObj.close();
           this.$message.success("全部修改成功！");
+          this.commitButtonShow = false;
         })
         .catch((error) => {
           loadingObj.close();
