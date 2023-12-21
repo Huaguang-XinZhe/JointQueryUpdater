@@ -8,7 +8,7 @@
     <!--    <TestStyle />-->
     <div v-show="topHalfShow">
       <TableComponent
-        ref="testCoreComponent"
+        ref="tableComponent"
         @coreToApp="commitAllChanges"
         :tableData="tableData"
         :map-size.sync="mapSize"
@@ -83,9 +83,10 @@ export default {
     // 提交所有更改
     commitAllChanges(changedList) {
       // console.log("提交所有更改", changedList);
+      let tableEl = this.$refs.tableComponent.$el;
       let loadingObj = this.$loading({
         // lock: true,
-        target: this.$refs.testCoreComponent.$el,
+        target: tableEl,
         text: "正在提交更改...",
         // spinner: "el-icon-loading",
         // background: "rgba(0, 0, 0, 0.7)",
@@ -100,6 +101,9 @@ export default {
         .then(() => {
           loadingObj.close();
           this.$message.success("全部修改成功！");
+          tableEl.querySelectorAll("[contentChanged]").forEach((el) => {
+            el.removeAttribute("contentChanged");
+          });
           this.commitButtonShow = false;
         })
         .catch((error) => {
@@ -110,7 +114,7 @@ export default {
     },
     triggerCoreMethod() {
       // todo 这里持有组件的引用也就只为了触发一个方法，似乎不太妥当
-      this.$refs.testCoreComponent.sendMapDataToParent();
+      this.$refs.tableComponent.sendMapDataToParent();
     },
   },
 };
@@ -127,9 +131,6 @@ export default {
   flex-direction: column; /* 让元素竖向排列，但会撑满全宽（如果子元素没有设置宽度的话） */
   justify-content: center;
   align-items: center; /* 在让元素竖直排列的情况下，这一项就变成了调整至水平居中 */
-}
-#app > div {
-  text-align: center;
 }
 hr {
   width: 1000px;

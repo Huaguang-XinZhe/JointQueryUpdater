@@ -39,7 +39,6 @@ export default {
   methods: {
     executeSql() {
       console.log("executeSql 执行了");
-      this.$bus.$emit("table_name_set", getTablesInSql(this.textInput));
       axios
         .post("http://localhost:8080/api/sql/execute", this.textInput, {
           headers: {
@@ -50,6 +49,7 @@ export default {
           this.$message.success("sql 执行成功！");
           this.$emit("update:topHalfShow", true); // 显示上半部分
           this.$emit("successfulResponse", response.data.data);
+          this.$bus.$emit("table_name_set", getTablesInSql(this.textInput)); // 成功后再触发
           // 在浏览器本地存储请求成功的 sql 语句
           localStorage.setItem("sql", this.textInput);
           this.textInput = ""; // 清空文本
@@ -76,14 +76,14 @@ export default {
 
 <style scoped>
 /* 可以直接影响 Element UI 的样式，不需要深度选择器 */
-.el-form-item {
-  /*display: flex;
+/*.el-form-item {
+  !*display: flex;
   flex-direction: column;
   align-items: center; !* 水平居中 *!
-  justify-content: center; !* 垂直居中 *!*/
-}
+  justify-content: center; !* 垂直居中 *!*!
+}*/
 .el-form {
-  width: 500px;
+  width: 600px;
   /* 使内部元素水平居中，简单方法 */
   text-align: center;
 }

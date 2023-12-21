@@ -28,13 +28,13 @@
         </tr>
       </tbody>
     </table>
-    <button @click="showData">显示数据</button>
   </div>
 </template>
 
 <script>
 // 表名-字段列表
 import debounce from "lodash/debounce";
+import { selectAll } from "@/utils";
 
 let tables = {
   mytag: ["id", "input_id", "c1", "c2", "c3"],
@@ -54,6 +54,7 @@ export default {
     // 初始化变更对象
     this.changedObj = {};
     this.changedMap = new Map();
+    this.tableNameSet = new Set();
     this.debouncedStyleCell = debounce(this.styleCell, 300);
     this.$bus.$on("table_name_set", (tableNameSet) => {
       // console.log("table_name_set 事件监听到了！", tableNameSet);
@@ -63,7 +64,7 @@ export default {
   },
   destroyed() {
     // 组件销毁时，取消监听
-    this.$bus.$off("table_count");
+    this.$bus.$off("table_name_set");
   },
   computed: {
     // 计算属性来获取当前表头
@@ -109,6 +110,7 @@ export default {
       // 给元素添加 contenteditable 属性，使其可编辑
       event.target.setAttribute("contenteditable", "true");
       event.target.focus(); // 必须要让它获得焦点，否则就得点 2 次才能输入
+      selectAll(event.target); // 选中所有文本
 
       // 当前点击的位置（复合键）
       let compoundKey = `${rowIndex}-${columnName}`;
@@ -128,7 +130,7 @@ export default {
 
         // 通过 tableData 拿到 rowId
         let rowObj = this.tableData[rowIndex];
-        // todo 这里要根据所查表的张数进行判断，如果只查一张表，那么就直接用 rowObj.id
+        // 根据所查表的张数进行判断，如果只查一张表，那么就直接用 rowObj.id
         let rowId = 0;
         if (this.tableNameSet.size === 1) {
           rowId = rowObj.id;
@@ -136,6 +138,7 @@ export default {
           // 查了多张表
           rowId = rowObj[`${tableName}_id`];
         }
+        console.log("rowId = ", rowId);
 
         // 设值（简化写法）
         // 这个设置必须放在前边，否则 originalValue 设置完后会被覆盖
@@ -184,12 +187,6 @@ export default {
       // 移除 contenteditable 属性，使其不可编辑
       event.target.removeAttribute("contenteditable");
     },
-    showData() {
-      // console.log("tableData:", this.tableData);
-      // console.log("currentTableHeader:", this.currentTableHeader);
-      // console.log("changedObj:", this.changedObj);
-      console.log("changedMap:", this.changedMap);
-    },
     sendMapDataToParent() {
       // 将 Map 转为数组
       let changedList = Array.from(this.changedMap.values());
@@ -226,6 +223,7 @@ export default {
   max-width: 1200px;
   max-height: 400px;
   overflow: auto; /* 在这个容器上设置滚动条 */
+  overflow-x: hidden; /* 隐藏水平滚动条 */
 }
 table {
   width: 100%; /* 让表格填满容器宽度 */
@@ -234,6 +232,9 @@ table {
 thead > tr {
   background-color: rgb(30, 31, 34);
   color: white;
+}
+tbody > tr:hover {
+  background-color: rgb(0, 0, 0, 0.1);
 }
 th,
 td {
@@ -247,11 +248,13 @@ td {
   max-width: 250px;
   /*max-lines: 3;*/ /* td 里没有这个属性 */
   /*max-height: 100px;*/ /* 为什么这个属性也没用呢？ */
+  user-select: none; /* 禁止选中文本，不会影响处于可编辑状态下的选择 */
 }
 /*不要加空格，加了空格就变成后代选择器了，不加就是 “与” 选择*/
 td.number {
   color: rgb(68, 67, 67);
   font-style: italic;
+  text-align: center;
 }
 td[contentChanged="true"] {
   background-color: skyblue;
@@ -265,5 +268,9 @@ td > i {
 }
 .empty-value {
   background-color: bisque;
+}
+/* 被选中的单元格样式 */
+.selected {
+  background-color: #acf; /* 被选中时的背景色 */
 }
 </style>
